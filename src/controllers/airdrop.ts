@@ -81,6 +81,7 @@ export const airdropHandler = async (req: Request, res: Response) => {
           amount: 0.000015 * LAMPORTS_PER_SOL,
           wallet_address: user.toString(),
           user_ip: env.isDevelopment ? "127.0.0.1" : ip,
+          timestamp: Date.now() / 1000,
         })
         .execute();
     }

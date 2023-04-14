@@ -20,6 +20,7 @@ model Transactions {
   signature      String @unique
   amount         Int
   wallet_address String
+  timestamp      Int
   Users          Users  @relation(fields: [user_ip], references: [ip])
   user_ip        String
 
