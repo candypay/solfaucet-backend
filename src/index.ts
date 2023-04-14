@@ -1,4 +1,5 @@
 import express, { Application, Request, Response } from "express";
+import cors from "cors";
 import "dotenv/config";
 
 import { router } from "@/router";
@@ -12,6 +13,7 @@ app.get("/", (_req: Request, res: Response) => {
 });
 
 app.use(express.json());
+app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use("/api", router);
 
