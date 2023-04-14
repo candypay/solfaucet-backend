@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model Users {
+  ip           String         @unique @default("")
+  transactions Transactions[]
+
+  @@index([ip])
+  @@map("users")
+}
+
+model Transactions {
+  signature      String @unique
+  amount         Int
+  wallet_address String
+  Users          Users  @relation(fields: [user_ip], references: [ip])
+  user_ip        String
+
+  @@index([user_ip])
+  @@map("transactions")
+}
