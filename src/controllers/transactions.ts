@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { database, env } from "@/helpers";
+import { prisma, env } from "@/helpers";
 
 export const getPastTransactionsHandler = async (
   req: Request,
@@ -11,11 +11,11 @@ export const getPastTransactionsHandler = async (
     : (req.headers["x-forwarded-for"] as string);
 
   try {
-    const transactions = await database
-      .selectFrom("transactions")
-      .where("user_ip", "=", ip)
-      .select(["amount", "signature", "timestamp", "wallet_address"])
-      .execute();
+    const transactions = await prisma.transactions.findMany({
+      where: {
+        user_ip: ip,
+      },
+    });
 
     if (!transactions) {
       return res.status(404).json({

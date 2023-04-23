@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["jsonProtocol"]
 }
 
 datasource db {
@@ -10,6 +11,7 @@ datasource db {
 
 model Users {
   ip           String         @unique @default("")
+  last_request DateTime?
   transactions Transactions[]
 
   @@index([ip])
@@ -17,11 +19,11 @@ model Users {
 }
 
 model Transactions {
-  signature      String @unique
+  signature      String   @unique
   amount         Int
   wallet_address String
-  timestamp      Int
-  Users          Users  @relation(fields: [user_ip], references: [ip])
+  timestamp      DateTime
+  Users          Users    @relation(fields: [user_ip], references: [ip])
   user_ip        String
 
   @@index([user_ip])

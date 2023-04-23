@@ -8,13 +8,15 @@ import {
   SendTransactionError,
 } from "@solana/web3.js";
 
-import { connection, database, payer, env } from "@/helpers";
+import { connection, prisma, payer, env } from "@/helpers";
 
 export const airdropHandler = async (req: Request, res: Response) => {
   const { wallet_address } = req.body;
   const ip = env.isDevelopment
     ? "127.0.0.1"
     : (req.headers["x-forwarded-for"] as string);
+
+  console.log(ip);
 
   if (!wallet_address) {
     return res.status(400).json({
@@ -27,19 +29,29 @@ export const airdropHandler = async (req: Request, res: Response) => {
     const balance = await connection.getBalance(user);
     const rentExempt = await connection.getMinimumBalanceForRentExemption(0);
 
-    const metadata = await database
-      .selectFrom("users")
-      .where("ip", "=", ip)
-      .selectAll()
-      .execute();
+    let metadata = await prisma.users.findUnique({
+      where: {
+        ip,
+      },
+    });
 
-    if (metadata.length === 0) {
-      await database
-        .insertInto("users")
-        .values({
-          ip: env.isDevelopment ? "127.0.0.1" : ip,
-        })
-        .execute();
+    if (!metadata) {
+      metadata = await prisma.users.create({
+        data: {
+          ip,
+        },
+      });
+    }
+
+    console.log(metadata?.last_request);
+
+    if (
+      metadata.last_request !== null &&
+      Date.now() - metadata!.last_request.getTime() < 24 * 60 * 60 * 1000
+    ) {
+      return res.status(429).json({
+        error: "try again after 24 hrs",
+      });
     }
 
     if (!(balance >= rentExempt && balance >= 0.000015)) {
@@ -74,16 +86,24 @@ export const airdropHandler = async (req: Request, res: Response) => {
         signature,
       });
 
-      await database
-        .insertInto("transactions")
-        .values({
+      await prisma.users.update({
+        where: {
+          ip,
+        },
+        data: {
+          last_request: new Date(),
+        },
+      });
+
+      await prisma.transactions.create({
+        data: {
           signature,
           amount: 0.000015 * LAMPORTS_PER_SOL,
           wallet_address: user.toString(),
-          user_ip: env.isDevelopment ? "127.0.0.1" : ip,
-          timestamp: Date.now() / 1000,
-        })
-        .execute();
+          user_ip: ip,
+          timestamp: new Date(),
+        },
+      });
     }
   } catch (err) {
     console.log(err);
