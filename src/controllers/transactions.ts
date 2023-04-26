@@ -17,7 +17,7 @@ export const getPastTransactionsHandler = async (
       },
     });
 
-    if (!transactions) {
+    if (transactions.length === 0) {
       return res.status(404).json({
         error: "no transactions were found",
       });
