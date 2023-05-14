@@ -54,15 +54,18 @@ export const airdropHandler = async (req: Request, res: Response) => {
       });
     }
 
-    if (!(balance >= rentExempt && balance >= 0.000015)) {
+    if (balance >= 0.000015) {
       return res.status(403).json({
         error: "forbidden",
       });
     } else {
+      const amount =
+        balance < rentExempt ? rentExempt : 0.000015 * LAMPORTS_PER_SOL;
+
       const transferInstruction = SystemProgram.transfer({
         fromPubkey: payer.publicKey,
         toPubkey: user,
-        lamports: 0.000015 * LAMPORTS_PER_SOL,
+        lamports: amount,
       });
 
       const { blockhash, lastValidBlockHeight } =
@@ -98,7 +101,7 @@ export const airdropHandler = async (req: Request, res: Response) => {
       await prisma.transactions.create({
         data: {
           signature,
-          amount: 0.000015 * LAMPORTS_PER_SOL,
+          amount: amount,
           wallet_address: user.toString(),
           user_ip: ip,
           timestamp: new Date(),
