@@ -9,7 +9,7 @@ export const getPastTransactionsHandler = async (
   try {
     const transactions = await prisma.transactions.findMany();
 
-    if (!transactions) {
+    if (transactions.length === 0) {
       return res.status(404).json({
         error: "no transactions were found",
       });
