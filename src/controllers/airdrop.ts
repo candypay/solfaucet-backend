@@ -43,7 +43,8 @@ export const airdropHandler = async (req: Request, res: Response) => {
       });
     }
 
-    console.log(metadata?.last_request);
+
+  
 
     if (
       metadata.last_request !== null &&
@@ -60,7 +61,7 @@ export const airdropHandler = async (req: Request, res: Response) => {
       });
     } else {
       const amount =
-        balance < rentExempt ? rentExempt : 0.000015 * LAMPORTS_PER_SOL;
+        balance < rentExempt ? rentExempt + 0.000015 * LAMPORTS_PER_SOL : 0.000015 * LAMPORTS_PER_SOL;
 
       const transferInstruction = SystemProgram.transfer({
         fromPubkey: payer.publicKey,
