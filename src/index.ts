@@ -5,7 +5,7 @@ import "dotenv/config";
 import { router } from "@/router";
 
 const app: Application = express();
-const allowedOrigins = ['https://solfaucet.fun/'];
+const allowedOrigins = ['https://solfaucet.fun'];
 
 app.get("/", (_req: Request, res: Response) => {
   return res.status(200).json({
@@ -13,7 +13,12 @@ app.get("/", (_req: Request, res: Response) => {
   });
 });
 
+
 app.use(express.json());
+app.use(cors({
+  origin: 'https://solfaucet.fun',
+  methods: ['GET', 'POST'],
+}));
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (!origin) { 
@@ -31,7 +36,7 @@ app.use((req, res, next) => {
   }
 
   // You can modify other CORS headers and options as needed
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.header('Access-Control-Allow-Methods', 'GET, POST');
 
   // Allow preflight OPTIONS requests
   if (req.method === 'OPTIONS') {
@@ -40,10 +45,6 @@ app.use((req, res, next) => {
 
   next();
 });
-app.use(cors({
-  origin: 'https://solfaucet.fun/',
-  methods: ['GET', 'POST'],
-}));
 
 app.use(express.urlencoded({ extended: false }));
 app.use("/api", router);
