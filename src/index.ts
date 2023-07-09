@@ -13,7 +13,10 @@ app.get("/", (_req: Request, res: Response) => {
 });
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'https://solfaucet.fun/',
+  methods: ['GET', 'POST'],
+}));
 app.use(express.urlencoded({ extended: false }));
 app.use("/api", router);
 
