@@ -1,5 +1,5 @@
 import express, { Application, Request, Response } from "express";
-// import cors from "cors";
+import cors from "cors";
 import "dotenv/config";
 
 import { router } from "@/router";
@@ -37,6 +37,10 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(cors({
+  origin: 'https://solfaucet.fun/',
+  methods: ['GET', 'POST'],
+}));
 
 app.use(express.urlencoded({ extended: false }));
 app.use("/api", router);
