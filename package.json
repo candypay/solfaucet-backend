@@ -1,7 +1,7 @@
 {
   "scripts": {
     "watch": "tsup --watch",
-    "build": "tsup",
+    "build": "tsup && prisma generate",
     "dev": "cross-env NODE_ENV=development nodemon dist/index.js",
     "start": "cross-env NODE_ENV=production node dist/index.js",
     "test": "vitest",
