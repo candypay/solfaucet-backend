@@ -8,7 +8,6 @@ export const env = cleanEnv(process.env, {
   RPC_URL: url(),
   DATABASE_URL: str(),
   PRIVATE_KEY: str(),
-  HELIUS_API_KEY: str(),
 });
 export const connection = new Connection(env.RPC_URL);
 export const payer = Keypair.fromSecretKey(base58.decode(env.PRIVATE_KEY));
